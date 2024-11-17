@@ -7,13 +7,17 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
 
-def plot_sensor(data, data_type, title='', filepath=None, size=(15, 6), overlay=True):
+def plot_sensor(data, data_type, title='', filepath=None, size=(15, 6), overlay=True,
+                use_timestamps=False):
     if data.shape[-1] == 5:
         data = data[:, (0, 2, 3, 4)]
     else:
         data = data[:, (0, 2)]
 
-    data_t = data[:, 0] - data[0, 0]
+    if use_timestamps != False:
+        data_x = data[:, 0] - data[0, 0]
+    else:
+        data_x = range(len(data))
 
     if data_type == 'acc':
         text = 'Accelerometer'
@@ -34,20 +38,20 @@ def plot_sensor(data, data_type, title='', filepath=None, size=(15, 6), overlay=
     if overlay:
         fig, ax = plt.subplots(1, 1, figsize=size, sharex=True)
         if data_type == 'hr':
-            ax.plot(data_t, data[:, 1], 'r-')
+            ax.plot(data_x, data[:, 1], 'r-')
         else:
-            ax.plot(data_t, data[:, 1], 'r-', label='X')
-            ax.plot(data_t, data[:, 2], 'g-', label='Y')
-            ax.plot(data_t, data[:, 3], 'b-', label='Z')
+            ax.plot(data_x, data[:, 1], 'r-', label='X')
+            ax.plot(data_x, data[:, 2], 'g-', label='Y')
+            ax.plot(data_x, data[:, 3], 'b-', label='Z')
         ax.set_ylabel(ylabel)
         ax.set_xlabel('Frame')
         if data_type != 'hr':
             ax.legend()
     else:
         fig, ax = plt.subplots(3, 1, figsize=size, sharex=True)
-        ax[0].plot(data_t, data[:, 1], 'r-', label='X')
-        ax[1].plot(data_t, data[:, 2], 'g-', label='Y')
-        ax[2].plot(data_t, data[:, 3], 'b-', label='Z')
+        ax[0].plot(data_x, data[:, 1], 'r-', label='X')
+        ax[1].plot(data_x, data[:, 2], 'g-', label='Y')
+        ax[2].plot(data_x, data[:, 3], 'b-', label='Z')
         ax[0].title.set_text(text + ' X-axis')
         ax[0].set_ylabel(ylabel)
         ax[1].title.set_text(text + ' Y-axis')
@@ -59,27 +63,6 @@ def plot_sensor(data, data_type, title='', filepath=None, size=(15, 6), overlay=
     fig.suptitle(title, size=16)
     if filepath is not None:
         fig.savefig(filepath, bbox_inches='tight')
-    plt.show()
-
-
-def plot_joints(data, dim, joints):
-    fig, ax = plt.subplots(len(joints) * dim, 1, figsize=(15, len(joints) * 2 * dim), sharex=True)
-    fig.tight_layout()
-    for i, joint in enumerate(joints):
-        ax[i * dim].title.set_text('Joint: ' + str(joint) + ' X')
-        ax[i * dim].plot(data[0, :, 0], data[0, :, joint + 1], 'r-', label='X')
-        ax[i * dim].set_ylabel('Units')
-
-        ax[i * dim + 1].title.set_text('Joint: ' + str(joint) + ' Y')
-        ax[i * dim + 1].plot(data[0, :, 0], data[1, :, joint + 1], 'b-', label='Y')
-        ax[i * dim + 1].set_ylabel('Units')
-
-        if dim == 3:
-            ax[i * dim + 2].title.set_text('Joint: ' + str(joint) + ' Z')
-            ax[i * dim + 2].plot(data[0, :, 0], data[2, :, joint + 1], 'g-', label='Z')
-            ax[i * dim + 2].set_ylabel('Units')
-
-    ax[i * dim + (dim - 1)].set_xlabel('Frame')
     plt.show()
 
 
