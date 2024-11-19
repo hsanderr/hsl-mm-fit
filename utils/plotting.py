@@ -62,27 +62,3 @@ def plot_sensor(data, data_type, title='', filepath=None, size=(15, 6), overlay=
     if filepath is not None:
         fig.savefig(filepath, bbox_inches='tight')
     plt.show()
-
-def plot_raw_data(data, workout_id, modality):
-    if ((workout_id == 'w00') or (workout_id == 'w10') or 
-        (workout_id == 'w20')):
-        if modality == 'sw_l_acc':
-            ylim = [-40, 40]
-            ylabel = 'm/(s^2)'
-        elif modality == 'sw_l_gyr':
-            ylim = [-15, 15]
-            ylabel = 'rad/s'
-        else:
-            raise Exception('Unexpected modality!')
-        fig, axes = plt.subplots(1,3,figsize=(20,5))
-        AXES_NAMES = ['X', 'Y', 'Z']
-        for i in range(len(axes)):
-            axes[i].plot(data[modality][workout_id][:,i+2], linewidth=0.5)
-            axes[i].set_title(AXES_NAMES[i])
-            axes[i].set_ylim(ylim)
-            axes[i].set_ylabel(ylabel)
-        fig.suptitle(
-            f'Workout ID: {workout_id}, Modality: {modality}', 
-            fontsize='x-large'
-        )
-        plt.show()
